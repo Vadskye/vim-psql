@@ -128,7 +128,7 @@ def parse_row(row):
 
 
 is_sql_pattern = re.compile(
-    r'\s*(!s|alter|create|delete|drop|insert|select|update|explain|truncate|with|analyze|vacuum|commit|--)',
+    r'\s*(!s|alter|create|delete|drop|insert|select|update|explain|truncate|with|analyze|vacuum|commit|refresh|--)',
     re.IGNORECASE
 )
 
