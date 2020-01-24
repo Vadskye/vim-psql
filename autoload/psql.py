@@ -8,6 +8,7 @@ import vim
 conn = None
 cur = None
 vim_buffer_name = '__vimpsql__'
+headers = None  # the headers from the most recent query
 rows = None  # the rows from the most recent query
 
 show_datetimes = False
@@ -155,6 +156,7 @@ def execute_sql(sql, pretty=True):
     if select_pattern.search(sql) and not limit_pattern.search(sql):
         sql = sql_end_pattern.sub(' limit 200', sql)
 
+    global headers
     global rows
     output = None
     try:
@@ -166,6 +168,7 @@ def execute_sql(sql, pretty=True):
     if output is None:
         try:
             rows = cur.fetchall()
+            headers = cur.description
             if pretty:
                 # add the column headers
                 table = PrettyTable()
