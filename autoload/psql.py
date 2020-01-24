@@ -150,8 +150,10 @@ def execute_command(register, pretty=True):
         exec(cmd)
 
 
-limit_pattern = re.compile(r'\blimit\b')
-select_pattern = re.compile(r'\bselect\b')
+create_pattern = re.compile(r'\bcreate\b', re.IGNORECASE)
+delete_pattern = re.compile(r'\bdelete\b', re.IGNORECASE)
+limit_pattern = re.compile(r'\blimit\b', re.IGNORECASE)
+select_pattern = re.compile(r'\bselect\b', re.IGNORECASE)
 sql_end_pattern = re.compile(';?\s*$')
 
 
@@ -161,7 +163,16 @@ def execute_sql(sql, pretty=True):
     Args:
         sql (str): SQL to execute
     """
-    if select_pattern.search(sql) and not limit_pattern.search(sql):
+    if 'drop schema' in sql and 'localhost' not in os.environ['DATABASE_URL']:
+        raise Exception("Cannot drop schema on nonlocal connection!")
+    if (
+            select_pattern.search(sql)
+            and not (
+                limit_pattern.search(sql)
+                or create_pattern.search(sql)
+                or delete_pattern.search(sql)
+            )
+    ):
         sql = sql_end_pattern.sub(' limit 200', sql)
 
     global headers
