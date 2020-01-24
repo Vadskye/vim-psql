@@ -19,12 +19,20 @@ def toggle_show_datetimes():
     show_datetimes = not show_datetimes
 
 
-def init(override=False):
+def init(database_url=None, override=False):
+    if not database_url:
+        database_url = os.environ["DATABASE_URL"]
+    if 'postgres' not in database_url:
+        database_url = f"postgres://localhost/{database_url}?sslmode=disable"
     global conn
     global cur
     if conn and not override:
         return
-    conn = psy.connect(os.environ['DATABASE_URL'])
+    if get_psql_buffer():
+        bprint(f"Connecting to: {database_url}")
+    else:
+        print(f"Connecting to: {database_url}")
+    conn = psy.connect(database_url)
     cur = conn.cursor()
 
 
